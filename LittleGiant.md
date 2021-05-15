@@ -1,6 +1,18 @@
-## 2021-05-04
+## 2021-05-04 分布式锁
 
-1.  Redis 常用命令
+1.  分布式锁特特点
+
+    互斥性：不同节点的不同线程互斥
+
+    可重入性：同一个节点的同一个线程获取锁之后，也可以再次获取这个锁
+
+    高效、高可用：加锁和解锁需要高效、高可用
+
+    支持阻塞和非阻塞：和ReentrantLock一样支持 lock 和 tryLock 以及 tryLock(long timeOut)
+
+    支持公平锁和非公平锁：
+
+2.  Redis 常用命令
 
     ```json
     EXISTS key...  -- key单个或者多个，返回存在key的个数
@@ -12,7 +24,7 @@
     PUBLISH -- 发布消息，返回接收到消息的redis客户端数量
     ```
 
-2.  Redis 实现分布式锁
+3.  Redis 实现分布式锁
 
     导入对应maven依赖
 
@@ -69,9 +81,9 @@
     -- 如果存在lockName，不存在指定Key，则返回lockName的过期时间
     return redis.call('pttl', KEYS[1]);
     ```
-    
+
     解锁Lua脚本
-    
+
     ```lua
     -- 如果KEYS[1] hash不存在对应Key ARGV[3]
     if (redis.call('hexists', KEYS[1], ARGV[3]) == 0) then
@@ -93,9 +105,9 @@
         end;
     return nil;
     ```
-    
+
     暴力解锁Lua脚本
-    
+
     ```Lua
     -- 删除指定hash KEYS[1], 成功发布无效消息并返回1，否则返回0
     if (redis.call('del', KEYS[1]) == 1) then
@@ -105,7 +117,7 @@
         return 0
         end
     ```
-    
+
     
 
 ## 2021-05-05
@@ -225,3 +237,4 @@
     (2) 注解处理器的注解处理过程
     (3) 分析语法树并生成字节码
     ```
+
